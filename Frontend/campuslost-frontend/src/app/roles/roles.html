@@ -4,6 +4,10 @@
     <p class="text-muted">CRUD - Roles</p>
   </div>
 
+  <button class="btn btn-outline-primary me-2" [routerLink]="['/inicio']">
+    Atras
+  </button>
+
   <div class="card shadow">
     <div class="card-header bg-primary text-white">Roles</div>
 
@@ -13,12 +17,20 @@
           <input
             class="form-control"
             type="search"
-            placeholder="Buscar por nombre (o ID y Enter)"
+            placeholder="Buscar por nombre o por ID"
             [(ngModel)]="searchTerm"
-            (input)="aplicarFiltroLocal()"
-            (keyup.enter)="buscar()"
             [disabled]="buscando || guardando"
           >
+        </div>
+        <div class="col-12 col-md-auto">
+          <button
+            type="button"
+            class="btn btn-outline-primary w-100"
+            (click)="buscar()"
+            [disabled]="buscando || guardando"
+          >
+            Buscar
+          </button>
         </div>
         <div class="col-12 col-md-auto">
           <button

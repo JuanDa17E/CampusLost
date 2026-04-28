@@ -3,11 +3,12 @@ import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CategoriaDto, CategoriaService } from '../services/categoria';
 import { firstValueFrom } from 'rxjs';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-categorias',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './categorias.html',
   styleUrl: './categorias.css',
 })

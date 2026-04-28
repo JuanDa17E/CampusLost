@@ -2,13 +2,14 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
+import { RouterLink } from '@angular/router';
 
 import { RolDto, RolService } from '../services/rol';
 
 @Component({
   selector: 'app-roles',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './roles.html',
   styleUrl: './roles.css',
 })

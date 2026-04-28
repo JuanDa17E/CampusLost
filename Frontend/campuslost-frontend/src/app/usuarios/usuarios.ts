@@ -2,21 +2,24 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
+import { RouterLink } from '@angular/router';
 
 import { UsuarioDto, UsuarioService } from '../services/usuario';
 import { RolDto, RolService } from '../services/rol';
 import { HttpErrorResponse } from '@angular/common/http';
+import { AuthService } from '../services/auth';
 
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './usuarios.html',
   styleUrl: './usuarios.css',
 })
 export class Usuarios implements OnInit {
   private readonly usuarioService = inject(UsuarioService);
   private readonly rolService = inject(RolService);
+  private readonly authService = inject(AuthService);
   private readonly platformId = inject(PLATFORM_ID);
 
   usuarios: UsuarioDto[] = [];
@@ -33,13 +36,87 @@ export class Usuarios implements OnInit {
   searchTerm = '';
   formVisible = false;
   editMode = false;
-  editorId: number | null = null;
+  puedeEditar = false;
+  private editorIdFromSession: number | null = null;
   rolId: number | null = null;
   form: UsuarioDto = { nombre: '', correo: '', contrasena: '' };
   private currentPassword: string | null = null;
 
+  private getSessionData(): any | null {
+    if (!isPlatformBrowser(this.platformId)) return null;
+    const raw = this.authService.obtenerSesion();
+    if (!raw) return null;
+
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return null;
+    }
+  }
+
+  private getLoggedUserId(): number | null {
+    const data = this.getSessionData();
+    if (!data) return null;
+
+    const id =
+      data?.idUsuario ??
+      data?.id_usuario ??
+      data?.usuario?.idUsuario ??
+      data?.usuario?.id_usuario;
+
+    const n = Number(id);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  private getLoggedRoleInfo(): { roleId: number | null; roleName: string | null } {
+    const data = this.getSessionData();
+    if (!data) return { roleId: null, roleName: null };
+
+    const roleIdRaw =
+      data?.idRol ??
+      data?.id_rol ??
+      data?.rol?.idRol ??
+      data?.rol?.id_rol ??
+      data?.usuario?.idRol ??
+      data?.usuario?.id_rol ??
+      data?.usuario?.rol?.idRol ??
+      data?.usuario?.rol?.id_rol;
+
+    const roleNameRaw =
+      data?.rol?.nombre ??
+      data?.rol?.name ??
+      data?.usuario?.rol?.nombre ??
+      data?.usuario?.rol?.name ??
+      data?.nombreRol ??
+      data?.role;
+
+    const roleId = Number.isFinite(Number(roleIdRaw)) ? Number(roleIdRaw) : null;
+    const roleName = typeof roleNameRaw === 'string' ? roleNameRaw.trim() : null;
+    return { roleId, roleName };
+  }
+
+  private isAdminFromSession(): boolean {
+    const { roleId, roleName } = this.getLoggedRoleInfo();
+    const normalizedName = (roleName ?? '').toLowerCase();
+
+    // Prefer role name when available; fallback to common ADMIN roleId=1.
+    if (normalizedName) {
+      return normalizedName.includes('admin');
+    }
+
+    return roleId === 1;
+  }
+
+  private refreshEditPermissions(): void {
+    const isAdmin = this.isAdminFromSession();
+    const userId = this.getLoggedUserId();
+    this.editorIdFromSession = isAdmin ? userId : null;
+    this.puedeEditar = this.editorIdFromSession != null;
+  }
+
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
+      this.refreshEditPermissions();
       this.cargando = true;
       setTimeout(() => {
         void this.cargar();
@@ -103,16 +180,19 @@ export class Usuarios implements OnInit {
     }
     this.formVisible = true;
     this.editMode = false;
-    this.editorId = null;
     this.rolId = null;
     this.currentPassword = null;
     this.form = { nombre: '', correo: '', contrasena: '' };
   }
 
   editar(item: UsuarioDto): void {
+    this.refreshEditPermissions();
+    if (!this.puedeEditar) {
+      alert('Solo los administradores pueden editar usuarios.');
+      return;
+    }
     this.formVisible = true;
     this.editMode = true;
-    this.editorId = null;
     this.rolId = this.getRolId(item) ?? null;
     this.currentPassword = (item.contrasena ?? '').trim() || null;
     this.form = {
@@ -127,7 +207,6 @@ export class Usuarios implements OnInit {
   cancelar(): void {
     this.formVisible = false;
     this.editMode = false;
-    this.editorId = null;
     this.rolId = null;
     this.currentPassword = null;
     this.form = { nombre: '', correo: '', contrasena: '' };
@@ -218,12 +297,13 @@ export class Usuarios implements OnInit {
       }
 
       if (this.editMode && id != null) {
-        const editorId = this.editorId;
+        this.refreshEditPermissions();
+        const editorId = this.editorIdFromSession;
         if (editorId == null || Number.isNaN(Number(editorId))) {
-          alert('Debes ingresar el editorId para actualizar.');
+          alert('No se pudo identificar un administrador en la sesión para editar. Inicia sesión con un admin.');
           return;
         }
-        await firstValueFrom(this.usuarioService.actualizar(id, payload, Number(editorId)));
+        await firstValueFrom(this.usuarioService.actualizar(id, payload, editorId));
       } else {
         await firstValueFrom(this.usuarioService.crear(payload));
       }

@@ -4,6 +4,10 @@
     <p class="text-muted">CRUD - Usuarios</p>
   </div>
 
+  <button class="btn btn-outline-primary me-2" [routerLink]="['/inicio']">
+    Atras
+  </button>
+
   <div class="card shadow">
     <div class="card-header bg-primary text-white">Usuarios</div>
 
@@ -13,12 +17,20 @@
           <input
             class="form-control"
             type="search"
-            placeholder="Buscar por nombre/correo (o ID y Enter)"
+            placeholder="Buscar por nombre/correo o por ID"
             [(ngModel)]="searchTerm"
-            (input)="aplicarFiltroLocal()"
-            (keyup.enter)="buscar()"
             [disabled]="buscando || guardando"
           >
+        </div>
+        <div class="col-12 col-md-auto">
+          <button
+            type="button"
+            class="btn btn-outline-primary w-100"
+            (click)="buscar()"
+            [disabled]="buscando || guardando"
+          >
+            Buscar
+          </button>
         </div>
         <div class="col-12 col-md-auto">
           <button
@@ -49,12 +61,6 @@
                 <div class="col-12 col-md-8" *ngIf="editMode">
                   <label class="form-label">Fecha_Creación</label>
                   <input class="form-control" type="text" [ngModel]="form.fechaCreacion" name="fechaCreacion" disabled>
-                </div>
-
-                <div class="col-12" *ngIf="editMode">
-                  <label class="form-label">EditorId (requerido para editar)</label>
-                  <input class="form-control" type="number" [(ngModel)]="editorId" name="editorId" required [disabled]="guardando">
-                  <div class="form-text">Debe ser el ID del usuario que está editando (quien tiene permisos).</div>
                 </div>
 
                 <div class="col-12">
@@ -144,7 +150,7 @@
               <td>{{ item.contrasena }}</td>
               <td>{{ item.fechaCreacion ?? item.fecha_creacion }}</td>
               <td class="text-center">
-                <button type="button" class="btn btn-warning btn-sm me-2" (click)="editar(item)" [disabled]="guardando || buscando">
+                <button *ngIf="puedeEditar" type="button" class="btn btn-warning btn-sm me-2" (click)="editar(item)" [disabled]="guardando || buscando">
                   Editar
                 </button>
                 <button

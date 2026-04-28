@@ -57,17 +57,26 @@
 
     <div class="card-body">
 
-      <div class="d-flex justify-content-between mb-3">
+      <div class="d-flex justify-content-between mb-3 gap-2">
 
-        <input
-          type="text"
-          class="form-control w-50"
-          placeholder="Buscar objeto..."
-          [(ngModel)]="searchTerm"
-          (input)="aplicarFiltroLocal()"
-          (keyup.enter)="buscar()"
-          [disabled]="buscando || guardando"
-        >
+        <div class="d-flex gap-2 w-50">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Buscar objeto..."
+            [(ngModel)]="searchTerm"
+            [disabled]="buscando || guardando"
+          >
+
+          <button
+            type="button"
+            class="btn btn-outline-primary"
+            (click)="buscar()"
+            [disabled]="buscando || guardando"
+          >
+            Buscar
+          </button>
+        </div>
 
         <button class="btn btn-primary" type="button" (click)="toggleRegistrar()" [disabled]="buscando || guardando">
           Registrar Objeto
