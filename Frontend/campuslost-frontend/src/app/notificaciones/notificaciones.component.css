@@ -1,0 +1,88 @@
+.notificaciones-wrapper {
+  position: fixed;
+  top: 1.5rem;  
+  right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 9999;
+  max-width: 360px;
+  width: 100%;
+}
+
+.notificacion {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px 16px;
+  border: 0.5px solid rgba(0,0,0,0.08);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  position: relative;
+  overflow: hidden;
+  animation: entrar 0.3s ease forwards;
+}
+
+@keyframes entrar {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.notificacion-barra {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  animation: barra 4s linear forwards;
+  border-radius: 0 0 12px 12px;
+}
+
+@keyframes barra {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+
+/* Tipos */
+.notificacion-exito .notificacion-icono { color: #3B6D11; }
+.notificacion-exito .notificacion-barra { background: #639922; }
+.notificacion-exito { border-left: 3px solid #639922; }
+
+.notificacion-error .notificacion-icono { color: #A32D2D; }
+.notificacion-error .notificacion-barra { background: #E24B4A; }
+.notificacion-error { border-left: 3px solid #E24B4A; }
+
+.notificacion-advertencia .notificacion-icono { color: #854F0B; }
+.notificacion-advertencia .notificacion-barra { background: #EF9F27; }
+.notificacion-advertencia { border-left: 3px solid #EF9F27; }
+
+.notificacion-info .notificacion-icono { color: #185FA5; }
+.notificacion-info .notificacion-barra { background: #378ADD; }
+.notificacion-info { border-left: 3px solid #378ADD; }
+
+.notificacion-icono {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.notificacion-mensaje {
+  font-size: 14px;
+  color: #2C2C2A;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.notificacion-cerrar {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #888780;
+  font-size: 15px;
+  padding: 0;
+  flex-shrink: 0;
+  transition: color 0.15s;
+  margin-top: 1px;
+}
+.notificacion-cerrar:hover { color: #2C2C2A; }

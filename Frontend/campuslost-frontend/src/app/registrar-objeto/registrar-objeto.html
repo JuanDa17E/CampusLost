@@ -1,0 +1,149 @@
+<app-navbar></app-navbar>
+
+<div class="registro-wrapper">
+
+  <!-- STEPPER HEADER -->
+  <div class="stepper-header">
+    <div class="stepper-pasos">
+
+      <div class="paso" [class.activo]="pasoActual === 1" [class.completado]="pasoActual > 1">
+        <div class="paso-numero">
+          <i class="ti ti-check" *ngIf="pasoActual > 1"></i>
+          <span *ngIf="pasoActual <= 1">1</span>
+        </div>
+        <span class="paso-label">Datos del objeto</span>
+      </div>
+
+      <div class="paso-linea" [class.completada]="pasoActual > 1"></div>
+
+      <div class="paso" [class.activo]="pasoActual === 2">
+        <div class="paso-numero">2</div>
+        <span class="paso-label">Preguntas de verificación</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PASO 1 -->
+  <div *ngIf="pasoActual === 1" class="registro-card">
+
+    <div class="registro-lado-izq">
+      <div class="registro-ilustracion">
+        <div class="ilustracion-circulo">
+          <i class="ti ti-package"></i>
+        </div>
+        <h2 class="ilustracion-titulo">Registra el objeto</h2>
+        <p class="ilustracion-desc">
+          Ingresa los datos básicos del objeto encontrado. Esta información será visible para todos los usuarios.
+        </p>
+        <ul class="ilustracion-tips">
+          <li><i class="ti ti-check"></i> Sé específico con el título</li>
+          <li><i class="ti ti-check"></i> Indica el lugar exacto</li>
+          <li><i class="ti ti-check"></i> La descripción es pública</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="registro-lado-der">
+      <h2 class="form-titulo">Datos del objeto</h2>
+      <p class="form-sub">Completa todos los campos obligatorios</p>
+
+      <div class="campo-grupo">
+        <label class="campo-label">Título <span class="requerido">*</span></label>
+        <input class="campo-input" type="text" [(ngModel)]="form.titulo"
+          placeholder="Ej: Mochila negra con zipper rojo" [disabled]="guardando">
+      </div>
+
+      <div class="campo-grupo">
+        <label class="campo-label">Categoría <span class="requerido">*</span></label>
+        <select class="campo-select" [(ngModel)]="categoriaId" [disabled]="guardando || categoriasLoading">
+          <option [ngValue]="null">-- Seleccionar categoría --</option>
+          <option *ngFor="let c of categorias" [ngValue]="c.idCategoria">{{ c.nombre }}</option>
+        </select>
+        <small class="campo-hint" *ngIf="categoriasLoading">Cargando categorías...</small>
+      </div>
+
+      <div class="campo-grupo">
+        <label class="campo-label">Lugar donde fue encontrado <span class="requerido">*</span></label>
+        <input class="campo-input" type="text" [(ngModel)]="form.lugar"
+          placeholder="Ej: Bloque A, piso 2, salón 201" [disabled]="guardando">
+      </div>
+
+      <div class="campo-grupo">
+        <label class="campo-label">Descripción <span class="campo-hint-inline">(visible para todos)</span></label>
+        <textarea class="campo-input campo-textarea" [(ngModel)]="form.descripcion"
+          placeholder="Describe brevemente el objeto sin dar pistas de las preguntas de verificación..."
+          [disabled]="guardando" rows="3"></textarea>
+      </div>
+
+      <div class="campo-grupo">
+        <label class="campo-label">Fecha en que fue encontrado <span class="requerido">*</span></label>
+        <input class="campo-input" type="date" [(ngModel)]="form.fecha" [disabled]="guardando">
+      </div>
+
+      <div class="form-footer">
+        <button type="button" class="btn-secundario" (click)="cancelar()" [disabled]="guardando">
+          Cancelar
+        </button>
+        <button type="button" class="btn-primario" (click)="siguientePaso()" [disabled]="guardando">
+          Siguiente <i class="ti ti-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PASO 2 -->
+  <div *ngIf="pasoActual === 2" class="registro-card">
+
+    <div class="registro-lado-izq">
+      <div class="registro-ilustracion">
+        <div class="ilustracion-circulo verde">
+          <i class="ti ti-lock"></i>
+        </div>
+        <h2 class="ilustracion-titulo">Preguntas secretas</h2>
+        <p class="ilustracion-desc">
+          Estas respuestas son confidenciales. Solo el encargado y tú las verán para verificar al dueño.
+        </p>
+        <ul class="ilustracion-tips">
+          <li><i class="ti ti-shield-check"></i> Nadie más verá tus respuestas</li>
+          <li><i class="ti ti-shield-check"></i> Sé preciso y detallado</li>
+          <li><i class="ti ti-shield-check"></i> Ayudan a identificar al dueño</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="registro-lado-der">
+      <h2 class="form-titulo">Preguntas de verificación</h2>
+      <p class="form-sub">Responde cada pregunta sobre el objeto encontrado</p>
+
+      <div *ngIf="preguntasLoading" class="preguntas-loading">
+        <i class="ti ti-loader"></i> Cargando preguntas...
+      </div>
+
+      <div *ngFor="let p of preguntasBase; let i = index" class="campo-grupo">
+        <label class="campo-label">
+          {{ i + 1 }}. {{ p.pregunta }}
+          <span class="requerido">*</span>
+        </label>
+        <input class="campo-input" type="text"
+          [(ngModel)]="respuestas[p.idPreguntaBase!]"
+          placeholder="Tu respuesta..."
+          [disabled]="guardando">
+      </div>
+
+      <div class="form-footer">
+        <button type="button" class="btn-secundario" (click)="volverPaso()" [disabled]="guardando">
+          <i class="ti ti-arrow-left"></i> Atrás
+        </button>
+        <button type="button" class="btn-primario btn-registrar-final"
+          (click)="registrar()" [disabled]="guardando">
+          <span *ngIf="!guardando"><i class="ti ti-check"></i> Registrar objeto</span>
+          <span *ngIf="guardando"><i class="ti ti-loader"></i> Registrando...</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+</div>

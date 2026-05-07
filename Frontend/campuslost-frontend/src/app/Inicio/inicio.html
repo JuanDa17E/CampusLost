@@ -11,9 +11,7 @@
         dentro del campus. Aquí puedes registrar lo que encontraste o buscar
         lo que perdiste.
       </p>
-      <button class="btn-primary" type="button" (click)="irAObjetos()">
-        Ver objetos perdidos
-      </button>
+      
     </div>
 
     <div class="hero-ilustracion">
@@ -30,34 +28,33 @@
   </div>
 
   <div class="features-grid">
-    <div class="feature-card">
-      <div class="feature-icono azul">
-        <i class="ti ti-clipboard-list"></i>
-      </div>
-      <h3 class="feature-titulo">Registra un objeto</h3>
-      <p class="feature-desc">¿Encontraste algo? Regístralo para que su dueño pueda reclamarlo.</p>
+  <div class="feature-card" (click)="irARegistrar()" style="cursor:pointer">
+    <div class="feature-icono azul">
+      <i class="ti ti-clipboard-list"></i>
     </div>
-
-    <div class="feature-card">
-      <div class="feature-icono verde">
-        <i class="ti ti-search"></i>
-      </div>
-      <h3 class="feature-titulo">Busca lo tuyo</h3>
-      <p class="feature-desc">Consulta el listado de objetos encontrados en el campus.</p>
-    </div>
-
-    <div class="feature-card">
-      <div class="feature-icono amarillo">
-        <i class="ti ti-circle-check"></i>
-      </div>
-      <h3 class="feature-titulo">Recupéralo</h3>
-      <p class="feature-desc">Coordina la entrega y cierra el caso cuando el objeto sea devuelto.</p>
-    </div>
+    <h3 class="feature-titulo">Registra un objeto</h3>
+    <p class="feature-desc">¿Encontraste algo? Regístralo para que su dueño pueda reclamarlo.</p>
   </div>
+
+  <div class="feature-card" (click)="irAObjetos()" style="cursor:pointer">
+    <div class="feature-icono verde">
+      <i class="ti ti-search"></i>
+    </div>
+    <h3 class="feature-titulo">Busca lo tuyo</h3>
+    <p class="feature-desc">Consulta el listado de objetos encontrados en el campus.</p>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-icono amarillo">
+      <i class="ti ti-circle-check"></i>
+    </div>
+    <h3 class="feature-titulo">Recupéralo</h3>
+    <p class="feature-desc">Coordina la entrega y cierra el caso cuando el objeto sea devuelto.</p>
+  </div>
+</div>
 
 </div>
 
-<!-- Modal cerrar sesión -->
 <div *ngIf="mostrarConfirmCerrarSesion">
   <div class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true">
     <div class="modal-dialog modal-dialog-centered">

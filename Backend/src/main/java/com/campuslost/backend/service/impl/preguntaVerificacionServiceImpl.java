@@ -29,9 +29,7 @@ public class preguntaVerificacionServiceImpl implements preguntaVerificacionServ
     public preguntaVerificacion actualizar(Integer id, preguntaVerificacion datos) {
         preguntaVerificacion existente = repository.findById(id)
             .orElseThrow(() -> new RuntimeException("Pregunta no encontrada"));
-        existente.setPregunta(datos.getPregunta());
         existente.setRespuesta(datos.getRespuesta());
-        existente.setEsPredefinida(datos.getEsPredefinida());
         return repository.save(existente);
     }
 

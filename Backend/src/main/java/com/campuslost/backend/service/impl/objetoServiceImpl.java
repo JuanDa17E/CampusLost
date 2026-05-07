@@ -1,24 +1,64 @@
 package com.campuslost.backend.service.impl;
 
 import com.campuslost.backend.entity.objeto;
+import com.campuslost.backend.repository.categoriaRepository;
+import com.campuslost.backend.repository.estadoRepository;
 import com.campuslost.backend.repository.objetoRepository;
+import com.campuslost.backend.repository.usuarioRepository;
 import com.campuslost.backend.service.objetoService;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
+import com.campuslost.backend.config.CONSTANTES;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class objetoServiceImpl implements objetoService {
-
     private final objetoRepository objetoRepository;
+    private final usuarioRepository usuarioRepository;
+    private final categoriaRepository categoriaRepository;
+    private final estadoRepository estadoRepository;
 
-    public objetoServiceImpl(objetoRepository objetoRepository) {
+   
+    
+    
+    public objetoServiceImpl(
+        objetoRepository objetoRepository,
+        usuarioRepository usuarioRepository,
+        categoriaRepository categoriaRepository,
+        estadoRepository estadoRepository
+    ) {
         this.objetoRepository = objetoRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.categoriaRepository = categoriaRepository;
+        this.estadoRepository = estadoRepository;
     }
+    
 
     @Override
     public objeto guardar(objeto objeto) {
+
+        if (objeto.getCategoria() != null && objeto.getCategoria().getIdCategoria() != null) {
+            objeto.setCategoria(
+                categoriaRepository.findById(objeto.getCategoria().getIdCategoria()).orElse(null)
+            );
+        }
+
+        if (objeto.getUsuario() != null && objeto.getUsuario().getIdUsuario() != null) {
+            objeto.setUsuario(
+                usuarioRepository.findById(objeto.getUsuario().getIdUsuario()).orElse(null)
+            );
+        }
+        if (objeto.getEstado() == null || objeto.getEstado().getIdEstado() == null) {
+            estadoRepository.findById(CONSTANTES.ESTADO_REGISTRADO).ifPresent(objeto::setEstado);
+        } else {
+            objeto.setEstado(
+                estadoRepository.findById(objeto.getEstado().getIdEstado()).orElse(null)
+            );
+        }
         return objetoRepository.save(objeto);
     }
 

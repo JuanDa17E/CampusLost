@@ -11,11 +11,12 @@ import { AuthService } from '../services/auth';
 import { PaginationControls } from '../shared/pagination-controls';
 import { TablePagination } from '../shared/table-pagination';
 import { Navbar } from '../componentes-generales/navbar-component';
+import { NotificacionService } from '../services/notificacion.service';
 
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, PaginationControls,Navbar],
+  imports: [CommonModule, FormsModule, PaginationControls,Navbar],
   templateUrl: './usuarios.html',
   styleUrl: './usuarios.css',
 })
@@ -25,6 +26,7 @@ export class Usuarios implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly notificacion = inject(NotificacionService);
 
   usuarios: UsuarioDto[] = [];
   usuariosView: UsuarioDto[] = [];
@@ -158,7 +160,7 @@ export class Usuarios implements OnInit {
       this.aplicarFiltroLocal();
     } catch (error) {
       console.error(error);
-      alert('No se pudo cargar la lista de usuarios.');
+      this.notificacion.error(this.notificacion.parsearError(error));
     } finally {
       this.cargando = false;
     }
@@ -191,7 +193,7 @@ export class Usuarios implements OnInit {
   editar(item: UsuarioDto): void {
     this.refreshEditPermissions();
     if (!this.puedeEditar) {
-      alert('Solo los administradores pueden editar usuarios.');
+      this.notificacion.advertencia('Solo los administradores pueden editar usuarios.');
       return;
     }
     this.formVisible = true;
@@ -247,7 +249,7 @@ export class Usuarios implements OnInit {
       } catch (error) {
         console.error(error);
         this.updatePagination([]);
-        alert('No se encontró el usuario con ese ID.');
+        this.notificacion.advertencia('No se encontró el usuario con ese ID.');
       } finally {
         this.buscando = false;
       }
@@ -270,12 +272,12 @@ export class Usuarios implements OnInit {
     const rolId = this.rolId;
 
     if (!nombre || !correo) {
-      alert('Nombre y correo son obligatorios.');
+      this.notificacion.advertencia('Nombre y correo son obligatorios.');
       return;
     }
 
     if (rolId == null || Number.isNaN(Number(rolId))) {
-      alert('El Id_Rol es obligatorio.');
+      this.notificacion.advertencia('El Id_Rol es obligatorio.');
       return;
     }
 
@@ -293,7 +295,7 @@ export class Usuarios implements OnInit {
 
       if (!this.editMode) {
         if (!contrasena) {
-          alert('La contraseña es obligatoria al registrar.');
+          this.notificacion.advertencia('La contraseña es obligatoria al registrar.');
           return;
         }
         payload.contrasena = contrasena;
@@ -311,7 +313,7 @@ export class Usuarios implements OnInit {
         this.refreshEditPermissions();
         const editorId = this.editorIdFromSession;
         if (editorId == null || Number.isNaN(Number(editorId))) {
-          alert('No se pudo identificar un administrador en la sesión para editar. Inicia sesión con un admin.');
+          this.notificacion.advertencia('No se pudo identificar un administrador en la sesión para editar. Inicia sesión con un admin.');
           return;
         }
         await firstValueFrom(this.usuarioService.actualizar(id, payload, editorId));
@@ -328,9 +330,9 @@ export class Usuarios implements OnInit {
           typeof error.error === 'string'
             ? error.error
             : (error.error?.message as string | undefined);
-        alert(serverMsg || 'No se pudo guardar el usuario.');
+        this.notificacion.error(serverMsg || 'No se pudo guardar el usuario.');
       } else {
-        alert('No se pudo guardar el usuario.');
+        this.notificacion.error('No se pudo guardar el usuario.');
       }
     } finally {
       this.guardando = false;
@@ -360,7 +362,7 @@ export class Usuarios implements OnInit {
       console.error(error);
       this.usuarios = prevUsuarios;
       this.updatePagination(prevUsuariosView);
-      alert('No se pudo eliminar el usuario.');
+      this.notificacion.error(this.notificacion.parsearError(error));
     } finally {
       this.eliminandoId = null;
     }

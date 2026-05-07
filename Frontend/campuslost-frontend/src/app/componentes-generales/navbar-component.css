@@ -170,3 +170,37 @@
   background: rgba(226, 75, 74, 0.15);
   color: #F09595;
 }
+.nav-dropdown {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--color-background-primary, #fff);
+  border: 0.5px solid rgba(0,0,0,0.15);
+  border-radius: 12px;
+  min-width: 230px;
+  padding: 6px;
+  z-index: 999;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.10);
+}
+
+/* ← esto es todo lo que necesitas para el hover */
+.nav-dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+.dropdown-btn .ti-chevron-down {
+  font-size: 14px;
+  transition: transform 0.2s;
+}
+
+.nav-dropdown:hover .dropdown-btn .ti-chevron-down {
+  transform: rotate(180deg);
+}

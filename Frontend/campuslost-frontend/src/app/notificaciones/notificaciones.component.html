@@ -1,0 +1,19 @@
+<div class="notificaciones-wrapper">
+  <div
+    *ngFor="let n of notificacionService.notificaciones()"
+    class="notificacion"
+    [class.notificacion-exito]="n.tipo === 'exito'"
+    [class.notificacion-error]="n.tipo === 'error'"
+    [class.notificacion-advertencia]="n.tipo === 'advertencia'"
+    [class.notificacion-info]="n.tipo === 'info'"
+  >
+    <div class="notificacion-icono">
+      <i class="ti" [class]="getIcono(n.tipo)"></i>
+    </div>
+    <span class="notificacion-mensaje">{{ n.mensaje }}</span>
+    <button class="notificacion-cerrar" type="button" (click)="notificacionService.cerrar(n.id)">
+      <i class="ti ti-x"></i>
+    </button>
+    <div class="notificacion-barra"></div>
+  </div>
+</div>

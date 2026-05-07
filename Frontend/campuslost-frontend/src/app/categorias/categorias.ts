@@ -7,11 +7,12 @@ import { RouterLink } from '@angular/router';
 import { PaginationControls } from '../shared/pagination-controls';
 import { TablePagination } from '../shared/table-pagination';
 import { Navbar } from '../componentes-generales/navbar-component';
+import { NotificacionService } from '../services/notificacion.service';
 
 @Component({
   selector: 'app-categorias',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, PaginationControls,Navbar],
+  imports: [CommonModule, FormsModule, PaginationControls,Navbar],
   templateUrl: './categorias.html',
   styleUrl: './categorias.css',
 })
@@ -19,6 +20,7 @@ export class Categorias implements OnInit {
   private readonly categoriaService = inject(CategoriaService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly notificacion = inject(NotificacionService);
 
   categorias: CategoriaDto[] = [];
   categoriasView: CategoriaDto[] = [];
@@ -46,7 +48,7 @@ export class Categorias implements OnInit {
       this.aplicarFiltroLocal();
     } catch (error) {
       console.error(error);
-      alert('No se pudo cargar la lista de categorías.');
+      this.notificacion.error(this.notificacion.parsearError(error));
     } finally {
       this.cargando = false;
     }
@@ -104,7 +106,7 @@ export class Categorias implements OnInit {
       } catch (error) {
         console.error(error);
         this.updatePagination([]);
-        alert('No se encontró la categoría con ese ID.');
+        this.notificacion.advertencia('No se encontró la categoría con ese ID.');
       } finally {
         this.buscando = false;
       }
@@ -123,7 +125,7 @@ export class Categorias implements OnInit {
   async guardar(): Promise<void> {
     const nombre = (this.form.nombre ?? '').trim();
     if (!nombre) {
-      alert('El nombre es obligatorio.');
+      this.notificacion.advertencia('El nombre es obligatorio.');
       return;
     }
 
@@ -140,7 +142,7 @@ export class Categorias implements OnInit {
       void this.cargar();
     } catch (error) {
       console.error(error);
-      alert('No se pudo guardar la categoría.');
+      this.notificacion.error(this.notificacion.parsearError(error));
     } finally {
       this.guardando = false;
     }
@@ -169,7 +171,7 @@ export class Categorias implements OnInit {
       console.error(error);
       this.categorias = prevCategorias;
       this.updatePagination(prevCategoriasView);
-      alert('No se pudo eliminar la categoría.');
+      this.notificacion.error(this.notificacion.parsearError(error));
     } finally {
       this.eliminandoId = null;
     }

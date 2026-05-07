@@ -31,7 +31,15 @@ export class inicio implements OnInit {
   }
 
   irAObjetos(): void {
-    this.router.navigate(['/objetos']);
+     this.router.navigate(['/objeto'], { 
+    queryParams: { from: '/inicio' } 
+  });
+  }
+
+  irARegistrar(): void {
+   this.router.navigate(['/registrar-objeto'], { 
+    queryParams: { from: '/inicio' } 
+  });
   }
 
   abrirConfirmCerrarSesion(): void {

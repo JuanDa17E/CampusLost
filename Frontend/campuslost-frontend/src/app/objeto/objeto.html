@@ -1,0 +1,78 @@
+<app-navbar></app-navbar>
+<div class="objetos-wrapper">
+
+  <div class="objetos-header">
+    <div class="header-izq">
+      <button class="btn-volver" type="button" (click)="irAInicio()">
+        <i class="ti ti-arrow-left"></i>
+        Volver
+      </button>
+      <div>
+        <h1 class="header-titulo">Objetos perdidos</h1>
+        <p class="header-sub">Campus IUSH — Consulta los objetos encontrados</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="filtros-card">
+    <div class="filtro-grupo">
+      <div class="filtro-input-wrap">
+        <i class="ti ti-search"></i>
+        <input
+          type="text"
+          class="filtro-input"
+          placeholder="Buscar por título o descripción..."
+          [(ngModel)]="filtroBusqueda"
+          (ngModelChange)="aplicarFiltros()"
+        >
+      </div>
+    </div>
+
+    <div class="filtro-grupo">
+      <select class="filtro-select" [(ngModel)]="filtroCategoria" (ngModelChange)="aplicarFiltros()">
+        <option value="">Todas las categorías</option>
+        <option *ngFor="let c of categorias" [value]="c">{{ c }}</option>
+      </select>
+    </div>
+
+    <div class="filtro-grupo">
+      <input
+        type="date"
+        class="filtro-input"
+        [(ngModel)]="filtroFecha"
+        (ngModelChange)="aplicarFiltros()"
+      >
+    </div>
+
+    <button class="btn-limpiar" type="button" (click)="limpiarFiltros()"
+      *ngIf="filtroBusqueda || filtroCategoria || filtroFecha">
+      <i class="ti ti-x"></i> Limpiar filtros
+    </button>
+  </div>
+
+  <div *ngIf="cargando" class="estado-mensaje">
+    <i class="ti ti-loader"></i> Cargando objetos...
+  </div>
+
+  <div *ngIf="!cargando && objetosFiltrados.length === 0" class="estado-mensaje">
+    <i class="ti ti-mood-empty"></i>
+    <p>No se encontraron objetos con esos filtros.</p>
+    <button class="btn-limpiar" type="button" (click)="limpiarFiltros()">Limpiar filtros</button>
+  </div>
+
+  <div class="objetos-grid" *ngIf="!cargando && objetosFiltrados.length > 0">
+    <div class="objeto-card" *ngFor="let item of objetosFiltrados">
+      <div class="objeto-categoria">
+        <i class="ti ti-tag"></i> {{ getCategoriaNombre(item) || 'Sin categoría' }}
+      </div>
+      <h3 class="objeto-titulo">{{ item.titulo }}</h3>
+      <p class="objeto-descripcion">{{ item.descripcion || 'Sin descripción.' }}</p>
+      <div class="objeto-footer">
+        <span class="objeto-fecha">
+          <i class="ti ti-calendar"></i> {{ getFechaDisplay(item) }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+</div>

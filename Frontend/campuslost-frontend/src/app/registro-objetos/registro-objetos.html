@@ -7,51 +7,45 @@
       <h1 class="page-titulo">Registro de objetos</h1>
       <p class="page-sub">Gestiona los objetos perdidos del campus</p>
     </div>
-    <button class="btn-registrar" type="button" (click)="toggleRegistrar()" [disabled]="buscando || guardando">
+    <button class="btn-registrar" type="button" (click)="irARegistrar()" [disabled]="guardando">
       <i class="ti ti-plus"></i> Registrar objeto
     </button>
   </div>
 
-  <!-- TARJETAS -->
   <div class="tarjetas-grid">
-    <div class="tarjeta tarjeta-total">
-      <div class="tarjeta-icono"><i class="ti ti-inbox"></i></div>
-      <div>
-        <p class="tarjeta-label">Total objetos</p>
-        <h2 class="tarjeta-valor">{{ cargando ? '...' : objetos.length }}</h2>
-      </div>
-    </div>
     <div class="tarjeta tarjeta-registrado">
       <div class="tarjeta-icono"><i class="ti ti-clipboard-list"></i></div>
       <div>
         <p class="tarjeta-label">Registrados</p>
-        <h2 class="tarjeta-valor">{{ cargando ? '...' : totalRegistrados }}</h2>
+        <h2 class="tarjeta-valor">{{ totalRegistrados }}</h2>
       </div>
     </div>
     <div class="tarjeta tarjeta-entregado">
       <div class="tarjeta-icono"><i class="ti ti-circle-check"></i></div>
       <div>
         <p class="tarjeta-label">Entregados</p>
-        <h2 class="tarjeta-valor">{{ cargando ? '...' : totalEntregados }}</h2>
+        <h2 class="tarjeta-valor">{{ totalEntregados }}</h2>
       </div>
     </div>
     <div class="tarjeta tarjeta-abandonado">
       <div class="tarjeta-icono"><i class="ti ti-alert-triangle"></i></div>
       <div>
         <p class="tarjeta-label">Abandonados</p>
-        <h2 class="tarjeta-valor">{{ cargando ? '...' : totalAbandonados }}</h2>
+        <h2 class="tarjeta-valor">{{ totalAbandonados }}</h2>
       </div>
     </div>
   </div>
 
-  <!-- TABLA -->
   <div class="tabla-card">
     <div class="tabla-busqueda">
       <div class="busqueda-input-wrap">
         <i class="ti ti-search"></i>
-        <input type="text" class="busqueda-input" placeholder="Buscar objeto..." [(ngModel)]="searchTerm" [disabled]="buscando || guardando">
+        <input type="text" class="busqueda-input" placeholder="Buscar objeto..."
+          [(ngModel)]="searchTerm" [disabled]="buscando || guardando">
       </div>
-      <button class="btn-buscar" type="button" (click)="buscar()" [disabled]="buscando || guardando">Buscar</button>
+      <button class="btn-buscar" type="button" (click)="buscar()" [disabled]="buscando || guardando">
+        Buscar
+      </button>
     </div>
 
     <app-pagination-controls
@@ -108,41 +102,41 @@
       </table>
     </div>
   </div>
-
 </div>
 
-<!-- Modal registrar/editar/estado -->
-<div *ngIf="formVisible" class="modal fade show" tabindex="-1" role="dialog" aria-modal="true" style="display: block;" (click)="!guardando && cancelar()">
+<!-- Modal editar -->
+<div *ngIf="formVisible" class="modal fade show" tabindex="-1" role="dialog" aria-modal="true"
+  style="display: block;" (click)="!guardando && cancelar()">
   <div class="modal-dialog modal-dialog-centered" role="document" (click)="$event.stopPropagation()">
     <div class="modal-content">
       <div class="modal-header">
         <h2 class="modal-title h5 mb-0">
-          {{ editMode ? (estadoOnlyMode ? 'Cambiar estado' : 'Editar objeto') : 'Registrar objeto' }}
+          {{ estadoOnlyMode ? 'Cambiar estado' : 'Editar objeto' }}
         </h2>
         <button type="button" class="btn-close" (click)="cancelar()" [disabled]="guardando"></button>
       </div>
       <div class="modal-body">
         <form class="row g-2">
-          <div class="col-12" *ngIf="editMode">
+          <div class="col-12">
             <label class="form-label">ID</label>
-            <input class="form-control" type="number" [ngModel]="form.idObjeto" name="idObjeto" disabled>
+            <input class="form-control" type="number" [ngModel]="form.idObjeto" disabled>
           </div>
+
           <ng-container *ngIf="!estadoOnlyMode">
             <div class="col-12">
               <label class="form-label">Título</label>
-              <input class="form-control" type="text" [(ngModel)]="form.titulo" name="titulo" required [disabled]="guardando">
+              <input class="form-control" type="text" [(ngModel)]="form.titulo" name="titulo" [disabled]="guardando">
             </div>
             <div class="col-12">
               <label class="form-label">Lugar</label>
-              <input class="form-control" type="text" [(ngModel)]="form.lugar" name="lugar" required [disabled]="guardando">
+              <input class="form-control" type="text" [(ngModel)]="form.lugar" name="lugar" [disabled]="guardando">
             </div>
             <div class="col-12">
               <label class="form-label">Categoría</label>
-              <select class="form-select" [(ngModel)]="categoriaId" name="categoriaId" required [disabled]="guardando || categoriasLoading">
+              <select class="form-select" [(ngModel)]="editCategoriaId" name="editCategoriaId" [disabled]="guardando">
                 <option [ngValue]="null">-- Seleccionar --</option>
                 <option *ngFor="let c of categorias" [ngValue]="c.idCategoria">{{ c.nombre }}</option>
               </select>
-              <small class="text-muted" *ngIf="categoriasLoading">Cargando categorías...</small>
             </div>
             <div class="col-12">
               <label class="form-label">Descripción</label>
@@ -153,14 +147,15 @@
               <input class="form-control" type="date" [(ngModel)]="form.fecha" name="fecha" [disabled]="guardando">
             </div>
           </ng-container>
-          <div class="col-12" *ngIf="!editMode || estadoOnlyMode">
+
+          <div class="col-12">
             <label class="form-label">Estado</label>
-            <select class="form-select" [(ngModel)]="estadoId" name="estadoId" [disabled]="guardando || estadosLoading">
+            <select class="form-select" [(ngModel)]="editEstadoId" name="editEstadoId" [disabled]="guardando">
               <option [ngValue]="null">-- Seleccionar --</option>
               <option *ngFor="let e of estados" [ngValue]="e.idEstado ?? e.id_estado">{{ e.nombre }}</option>
             </select>
-            <small class="text-muted" *ngIf="estadosLoading">Cargando estados...</small>
           </div>
+
           <div class="col-12 d-grid gap-2 d-md-flex justify-content-md-end mt-2">
             <button type="button" class="btn btn-secondary" (click)="cancelar()" [disabled]="guardando">Cancelar</button>
             <button type="button" class="btn btn-success" (click)="guardar()" [disabled]="guardando">

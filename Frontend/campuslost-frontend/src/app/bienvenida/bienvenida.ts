@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth';
+import { NotificacionService } from '../services/notificacion.service';
 
 @Component({
   selector: 'app-bienvenida',
@@ -15,6 +16,7 @@ export class Bienvenida {
 
   private auth = inject(AuthService);
   private router = inject(Router);
+  private notificacion = inject(NotificacionService);
 
   correo = '';
   contrasena = '';
@@ -23,7 +25,7 @@ export class Bienvenida {
   iniciarSesion() {
 
     if (!this.correo || !this.contrasena) {
-      alert('Completa los campos');
+      this.notificacion.advertencia('Completa los campos');
       return;
     }
 
@@ -39,7 +41,7 @@ export class Bienvenida {
         console.log(resp);
 
         if (typeof resp === 'string') {
-          alert(resp);
+          this.notificacion.exito(resp);
           this.cargando = false;
           return;
         }
@@ -51,7 +53,7 @@ export class Bienvenida {
 
       error: (err) => {
         console.error(err);
-        alert('Credenciales incorrectas');
+        this.notificacion.advertencia('Credenciales incorrectas');
         this.cargando = false;
       },
 
