@@ -17,24 +17,28 @@ export class AuthService {
     return isPlatformBrowser(this.platformId);
   }
 
-  login(data: any): Observable<any> {
+  login(data: { correo: string; contrasena: string }): Observable<any> {
     return this.http.post<any>(`${this.api}/login`, data);
   }
 
-  guardarSesion(usuario: any): void {
-  if (!this.isBrowser) return;
-  const sesionMinima = {
-    idUsuario: usuario.idUsuario ?? usuario.id_usuario,
-    nombre: usuario.nombre,
-    rol: usuario.rol?.nombre ?? usuario.rol
-  };
-  sessionStorage.setItem('usuario', JSON.stringify(sesionMinima));
-}
+  registrar(data: { nombre: string; correo: string; contrasena: string }): Observable<any> {
+    return this.http.post(`${this.api}/registro`, data, { responseType: 'text' });
+  }
 
+  guardarSesion(usuario: any): void {
+    if (!this.isBrowser) return;
+    const sesionMinima = {
+      idUsuario: usuario.idUsuario ?? usuario.id_usuario,
+      nombre: usuario.nombre,
+      rol: usuario.rol?.nombre ?? usuario.rol
+    };
+    sessionStorage.setItem('usuario', JSON.stringify(sesionMinima));
+  }
 
   obtenerSesion(): any {
     if (!this.isBrowser) return null;
-    return sessionStorage.getItem('usuario');
+    const raw = sessionStorage.getItem('usuario');
+    return raw ? JSON.parse(raw) : null;
   }
 
   cerrarSesion(): void {

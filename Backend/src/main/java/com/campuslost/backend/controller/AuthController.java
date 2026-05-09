@@ -3,7 +3,8 @@ package com.campuslost.backend.controller;
 import com.campuslost.backend.entity.usuario;
 import com.campuslost.backend.repository.usuarioRepository;
 import com.campuslost.backend.service.impl.loginRequest;
-
+import com.campuslost.backend.service.impl.registerRequest;
+import com.campuslost.backend.entity.rol;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public Object login(@RequestBody loginRequest request) {
-
         usuario user = usuarioRepository
                 .findByCorreo(request.getCorreo())
                 .orElse(null);
@@ -43,4 +43,27 @@ public class AuthController {
 
         return user;
     }
+
+    @PostMapping("/registro")
+    public Object registro(@RequestBody registerRequest request) {
+
+        boolean existe = usuarioRepository.findByCorreo(request.getCorreo()).isPresent();
+        if (existe) {
+            return "El correo ya está registrado";
+        }
+
+        usuario nuevoUsuario = new usuario();
+        nuevoUsuario.setNombre(request.getNombre());
+        nuevoUsuario.setCorreo(request.getCorreo());
+        nuevoUsuario.setContrasena(passwordEncoder.encode(request.getContrasena()));
+
+        rol rolDefault = new rol();
+        rolDefault.setIdRol(1);
+        nuevoUsuario.setRol(rolDefault);
+
+        usuarioRepository.save(nuevoUsuario);
+
+        return "Usuario registrado correctamente";
+    }
+
 }
