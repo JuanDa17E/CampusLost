@@ -6,7 +6,7 @@ import { PreguntaVerificacionDto } from '../dto/preguntaVerificacionDTO';
 @Injectable({ providedIn: 'root' })
 export class PreguntaVerificacionService {
   private readonly http = inject(HttpClient);
-  private readonly api = 'http://localhost:8080/api/preguntas-verificacion';
+  private readonly api = '${environment.apiUrl}/preguntas-verificacion';
 
   guardar(data: PreguntaVerificacionDto): Observable<PreguntaVerificacionDto> {
     return this.http.post<PreguntaVerificacionDto>(this.api, data);
