@@ -2,11 +2,12 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PreguntaBaseDto } from '../dto/preguntaBaseDTO';
+import { environment } from '../../enviroments/enviroment';
 
 @Injectable({ providedIn: 'root' })
 export class PreguntaBaseService {
   private readonly http = inject(HttpClient);
-  private readonly api = 'http://localhost:8080/api/preguntas-base';
+  private readonly api = `${environment.apiUrl}/preguntas-base`;
 
   listarActivas(): Observable<PreguntaBaseDto[]> {
     return this.http.get<PreguntaBaseDto[]>(this.api);

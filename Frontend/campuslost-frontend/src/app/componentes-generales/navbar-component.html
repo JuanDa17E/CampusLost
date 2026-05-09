@@ -2,6 +2,12 @@
   <div class="nav-inner">
     <span class="nav-brand">CampusLost</span>
 
+    <!-- Hamburguesa solo en móvil -->
+    <button class="hamburger" type="button" (click)="toggleMenu()">
+      <i class="ti" [class.ti-menu-2]="!menuAbierto" [class.ti-x]="menuAbierto"></i>
+    </button>
+
+    <!-- Links desktop -->
     <div class="nav-links">
       <a class="nav-link" routerLink="/inicio" routerLinkActive="active">
         <i class="ti ti-home"></i> Inicio
@@ -16,7 +22,6 @@
           Administración
           <i class="ti ti-chevron-down"></i>
         </button>
-
         <div class="dropdown-menu">
           <span class="dropdown-label">Administración general</span>
           <a class="dropdown-item" routerLink="/crud/roles">
@@ -38,5 +43,36 @@
         <i class="ti ti-logout"></i> Cerrar sesión
       </button>
     </div>
+
+    <!-- Menú móvil -->
+    <div class="mobile-menu" [class.show]="menuAbierto">
+      <a class="mobile-link" routerLink="/inicio" routerLinkActive="active" (click)="cerrarMenu()">
+        <i class="ti ti-home"></i> Inicio
+      </a>
+      <a class="mobile-link" routerLink="/registro-objetos" routerLinkActive="active" (click)="cerrarMenu()">
+        <i class="ti ti-clipboard-list"></i> Registro objetos
+      </a>
+
+      <div class="mobile-seccion">
+        <span class="mobile-label">Administración general</span>
+        <a class="mobile-link" routerLink="/crud/roles" (click)="cerrarMenu()">
+          <i class="ti ti-shield-check"></i> Administrar roles
+        </a>
+        <a class="mobile-link" routerLink="/crud/usuarios" (click)="cerrarMenu()">
+          <i class="ti ti-users"></i> Administrar usuarios
+        </a>
+        <a class="mobile-link" routerLink="/crud/categorias" (click)="cerrarMenu()">
+          <i class="ti ti-category"></i> Administrar categorías
+        </a>
+        <a class="mobile-link" routerLink="/crud/estados" (click)="cerrarMenu()">
+          <i class="ti ti-list-check"></i> Administrar estados
+        </a>
+      </div>
+
+      <button class="mobile-link mobile-logout" type="button" (click)="cerrarSesion()">
+        <i class="ti ti-logout"></i> Cerrar sesión
+      </button>
+    </div>
+
   </div>
 </nav>
