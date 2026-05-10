@@ -2,13 +2,13 @@
   "name": "campuslost-frontend",
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "serve:ssr:campuslost-frontend": "node dist/campuslost-frontend/server/server.mjs"
-  },
+  "ng": "ng",
+  "start": "ng serve",
+  "build": "ng build --configuration production",
+  "watch": "ng build --watch --configuration development",
+  "test": "ng test",
+  "serve:ssr:campuslost-frontend": "node dist/campuslost-frontend/server/server.mjs"
+},
   "private": true,
   "packageManager": "npm@11.9.0",
   "dependencies": {
