@@ -1,7 +1,7 @@
 .inicio-wrapper {
-  padding: 2rem 2.5rem;
+  padding: 56px 2.5rem 2rem 2.5rem;
   background: #f4f6fb;
-  min-height: calc(100vh - 56px);
+  min-height: 100vh;
 }
 
 /* HERO */
