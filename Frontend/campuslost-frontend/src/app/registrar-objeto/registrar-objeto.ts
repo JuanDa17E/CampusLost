@@ -51,14 +51,11 @@ export class RegistrarObjeto implements OnInit {
   private rutaOrigen = '/registrar-objeto';
 
   private getLoggedUserId(): number | null {
-    const raw = this.authService.obtenerSesion();
-    if (!raw) return null;
-    try {
-      const data = JSON.parse(raw);
-      const id = data?.idUsuario ?? data?.id_usuario;
-      const n = Number(id);
-      return Number.isFinite(n) ? n : null;
-    } catch { return null; }
+    const data = this.authService.obtenerSesion();
+    if (!data) return null;
+    const id = data?.idUsuario ?? data?.id_usuario;
+    const n = Number(id);
+    return Number.isFinite(n) ? n : null;
   }
 
   private getId(item: ObjetoDto): number | undefined {
@@ -151,7 +148,8 @@ export class RegistrarObjeto implements OnInit {
         }
       }
 
-      this.router.navigate(['/objetos']);
+      this.notificacion.exito('Objeto registrado correctamente.');
+      this.router.navigate([this.rutaOrigen]);
     } catch (e) {
       console.error(e);
       this.notificacion.error(this.notificacion.parsearError(e));
@@ -159,6 +157,5 @@ export class RegistrarObjeto implements OnInit {
       this.guardando = false;
       this.cdr.markForCheck();
     }
-     this.router.navigate([this.rutaOrigen]);
   }
 }
