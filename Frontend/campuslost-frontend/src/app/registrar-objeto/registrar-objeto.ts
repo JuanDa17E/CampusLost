@@ -38,6 +38,8 @@ export class RegistrarObjeto implements OnInit {
   pasoActual = 1;
   guardando = false;
 
+  maxFecha = this.toLocalDateInputValue(new Date());
+
   form: ObjetoDto = { titulo: '', descripcion: '', lugar: '', fecha: '' };
   categoriaId: number | null = null;
 
@@ -63,9 +65,25 @@ export class RegistrarObjeto implements OnInit {
   }
 
   ngOnInit(): void {
-      this.rutaOrigen = this.route.snapshot.queryParams['from'] ?? '/registrar-objeto';
+    this.rutaOrigen = this.route.snapshot.queryParams['from'] ?? '/registrar-objeto';
+    // Recalcula por si el componente queda abierto y cambia el día.
+    this.maxFecha = this.toLocalDateInputValue(new Date());
     void this.cargarCategorias();
     void this.cargarPreguntasBase();
+  }
+
+  private toLocalDateInputValue(date: Date): string {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+  private esFechaFutura(fecha: string | null | undefined): boolean {
+    const value = (fecha ?? '').trim();
+    if (!value) return false;
+    // Con formato YYYY-MM-DD, la comparación lexicográfica funciona.
+    return value > this.maxFecha;
   }
 
   async cargarCategorias(): Promise<void> {
@@ -94,6 +112,7 @@ export class RegistrarObjeto implements OnInit {
     if (!this.form.titulo?.trim()) { this.notificacion.advertencia('El título es obligatorio.'); return; }
     if (!this.form.lugar?.trim()) { this.notificacion.advertencia('El lugar es obligatorio.'); return; }
     if (!this.form.fecha?.trim()) { this.notificacion.advertencia('La fecha es obligatoria.'); return; }
+    if (this.esFechaFutura(this.form.fecha)) { this.notificacion.advertencia('La fecha no puede ser superior a hoy.'); return; }
     if (!this.categoriaId) { this.notificacion.advertencia('La categoría es obligatoria.'); return; }
     this.pasoActual = 2;
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -107,6 +126,12 @@ export class RegistrarObjeto implements OnInit {
     this.router.navigate([this.rutaOrigen]);
   }
   async registrar(): Promise<void> {
+    if (this.esFechaFutura(this.form.fecha)) {
+      this.notificacion.advertencia('La fecha no puede ser superior a hoy.');
+      this.pasoActual = 1;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
     const todasRespondidas = this.preguntasBase.every(
       p => p.idPreguntaBase != null && (this.respuestas[p.idPreguntaBase] ?? '').trim() !== ''
     );

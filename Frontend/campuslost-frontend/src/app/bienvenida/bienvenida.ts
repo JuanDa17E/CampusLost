@@ -32,6 +32,8 @@ export class Bienvenida {
   regContrasena = '';
   regConfirmar = '';
 
+  private readonly correoDominioPermitido = 'comunidad.iush.edu.co';
+
   cargando = false;
 
   cambiarVista(vista: 'login' | 'registro') {
@@ -77,9 +79,30 @@ export class Bienvenida {
     });
   }
 
+  private esCorreoInstitucional(correo: string): boolean {
+    const value = (correo ?? '').trim().toLowerCase();
+    // Debe ser exactamente algo@comunidad.iush.edu.co
+    const re = new RegExp(`^[^@\\s]+@${this.correoDominioPermitido.replace(/\./g, '\\.')}$`, 'i');
+    return re.test(value);
+  }
+
+  private errorContrasena(contrasena: string): string | null {
+    const value = (contrasena ?? '').trim();
+    if (value.length < 8) return 'La contraseña debe tener mínimo 8 caracteres.';
+    if (!/[A-Z]/.test(value)) return 'La contraseña debe incluir al menos una mayúscula.';
+    // “caracter especial”: cualquier carácter no alfanumérico
+    if (!/[^A-Za-z0-9]/.test(value)) return 'La contraseña debe incluir al menos un caracter especial.';
+    return null;
+  }
+
   registrar() {
     if (!this.regNombre || !this.regCorreo || !this.regContrasena || !this.regConfirmar) {
       this.notificacion.advertencia('Completa todos los campos');
+      return;
+    }
+
+    if (!this.esCorreoInstitucional(this.regCorreo)) {
+      this.notificacion.advertencia(`El correo debe terminar en @${this.correoDominioPermitido}`);
       return;
     }
 
@@ -88,8 +111,9 @@ export class Bienvenida {
       return;
     }
 
-    if (this.regContrasena.length < 6) {
-      this.notificacion.advertencia('La contraseña debe tener al menos 6 caracteres');
+    const errorPass = this.errorContrasena(this.regContrasena);
+    if (errorPass) {
+      this.notificacion.advertencia(errorPass);
       return;
     }
 
@@ -97,7 +121,7 @@ export class Bienvenida {
 
     this.auth.registrar({
       nombre: this.regNombre,
-      correo: this.regCorreo,
+      correo: this.regCorreo.trim(),
       contrasena: this.regContrasena
     }).subscribe({
       next: (resp) => {

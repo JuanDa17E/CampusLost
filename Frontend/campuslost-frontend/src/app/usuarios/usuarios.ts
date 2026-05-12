@@ -49,6 +49,22 @@ export class Usuarios implements OnInit {
   form: UsuarioDto = { nombre: '', correo: '', contrasena: '' };
   private currentPassword: string | null = null;
 
+  private readonly correoDominioPermitido = 'comunidad.iush.edu.co';
+
+  private esCorreoInstitucional(correo: string): boolean {
+    const value = (correo ?? '').trim().toLowerCase();
+    const re = new RegExp(`^[^@\\s]+@${this.correoDominioPermitido.replace(/\./g, '\\.')}$`, 'i');
+    return re.test(value);
+  }
+
+  private errorContrasena(contrasena: string): string | null {
+    const value = (contrasena ?? '').trim();
+    if (value.length < 8) return 'La contraseña debe tener mínimo 8 caracteres.';
+    if (!/[A-Z]/.test(value)) return 'La contraseña debe incluir al menos una mayúscula.';
+    if (!/[^A-Za-z0-9]/.test(value)) return 'La contraseña debe incluir al menos un caracter especial.';
+    return null;
+  }
+
   private getSessionData(): any | null {
     if (!isPlatformBrowser(this.platformId)) return null;
     const raw = this.authService.obtenerSesion();
@@ -276,6 +292,11 @@ export class Usuarios implements OnInit {
       return;
     }
 
+    if (!this.esCorreoInstitucional(correo)) {
+      this.notificacion.advertencia(`El correo debe terminar en @${this.correoDominioPermitido}`);
+      return;
+    }
+
     if (rolId == null || Number.isNaN(Number(rolId))) {
       this.notificacion.advertencia('El Id_Rol es obligatorio.');
       return;
@@ -298,11 +319,22 @@ export class Usuarios implements OnInit {
           this.notificacion.advertencia('La contraseña es obligatoria al registrar.');
           return;
         }
+
+        const errorPass = this.errorContrasena(contrasena);
+        if (errorPass) {
+          this.notificacion.advertencia(errorPass);
+          return;
+        }
         payload.contrasena = contrasena;
       } else {
         // Si no se ingresa contraseña, reenviamos la actual para que el backend no la deje en null/vacía.
         // (Esto asume que el backend retorna la contraseña; en tu UI ya se muestra en tabla.)
         if (contrasena) {
+          const errorPass = this.errorContrasena(contrasena);
+          if (errorPass) {
+            this.notificacion.advertencia(errorPass);
+            return;
+          }
           payload.contrasena = contrasena;
         } else if (this.currentPassword) {
           payload.contrasena = this.currentPassword;

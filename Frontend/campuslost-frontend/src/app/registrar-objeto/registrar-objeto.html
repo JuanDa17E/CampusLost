@@ -78,7 +78,7 @@
 
       <div class="campo-grupo">
         <label class="campo-label">Fecha en que fue encontrado <span class="requerido">*</span></label>
-        <input class="campo-input" type="date" [(ngModel)]="form.fecha" [disabled]="guardando">
+        <input class="campo-input" type="date" [(ngModel)]="form.fecha" [attr.max]="maxFecha" [disabled]="guardando">
       </div>
 
       <div class="form-footer">
