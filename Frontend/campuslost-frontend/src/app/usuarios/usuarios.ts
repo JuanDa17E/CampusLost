@@ -48,6 +48,8 @@ export class Usuarios implements OnInit {
   rolId: number | null = null;
   form: UsuarioDto = { nombre: '', correo: '', contrasena: '' };
   private currentPassword: string | null = null;
+  mostrarModalEliminar = false;
+  usuarioAEliminar: UsuarioDto | null = null;
 
   private readonly correoDominioPermitido = 'comunidad.iush.edu.co';
 
@@ -376,6 +378,22 @@ export class Usuarios implements OnInit {
     if (id == null) return;
     const ok = confirm('¿Seguro que deseas eliminar este usuario?');
     if (!ok) return;
+    await this.eliminarConfirmado(item);
+  }
+
+  abrirModalEliminar(item: UsuarioDto): void {
+    this.usuarioAEliminar = item;
+    this.mostrarModalEliminar = true;
+  }
+
+  cerrarModalEliminar(): void {
+    this.mostrarModalEliminar = false;
+    this.usuarioAEliminar = null;
+  }
+
+  private async eliminarConfirmado(item: UsuarioDto): Promise<void> {
+    const id = this.getId(item);
+    if (id == null) return;
 
     const prevUsuarios = this.usuarios;
     const prevUsuariosView = this.usuariosView;
@@ -397,6 +415,12 @@ export class Usuarios implements OnInit {
       this.notificacion.error(this.notificacion.parsearError(error));
     } finally {
       this.eliminandoId = null;
+      this.cerrarModalEliminar();
     }
+  }
+  
+  async confirmarEliminar(): Promise<void> {
+    if (!this.usuarioAEliminar) return;
+    await this.eliminarConfirmado(this.usuarioAEliminar);
   }
 }

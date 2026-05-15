@@ -54,7 +54,9 @@ export class RegistroObjetos implements OnInit {
   // — Modal editar/estado —
   formVisible = false;
   editMode = false;
-  estadoOnlyMode = false;
+  mostrarModalEliminar = false;
+  objetoAEliminar: ObjetoDto | null = null;
+  eliminandoId: number | null = null;
   private originalEditingItem: ObjetoDto | null = null;
   editCategoriaId: number | null = null;
   editEstadoId: number | null = null;
@@ -195,7 +197,6 @@ export class RegistroObjetos implements OnInit {
   editar(item: ObjetoDto): void {
     this.formVisible = true;
     this.editMode = true;
-    this.estadoOnlyMode = false;
     this.originalEditingItem = item;
     this.editEstadoId = this.getEstadoId(item) ?? null;
     this.editCategoriaId = this.getCategoriaId(item) ?? null;
@@ -208,20 +209,9 @@ export class RegistroObjetos implements OnInit {
     };
   }
 
-  editarEstado(item: ObjetoDto): void {
-    this.formVisible = true;
-    this.editMode = true;
-    this.estadoOnlyMode = true;
-    this.originalEditingItem = item;
-    this.editEstadoId = this.getEstadoId(item) ?? null;
-    this.editCategoriaId = this.getCategoriaId(item) ?? null;
-    this.form = { idObjeto: this.getId(item) };
-  }
-
   cancelar(): void {
     this.formVisible = false;
     this.editMode = false;
-    this.estadoOnlyMode = false;
     this.originalEditingItem = null;
     this.editEstadoId = null;
     this.editCategoriaId = null;
@@ -235,11 +225,9 @@ export class RegistroObjetos implements OnInit {
     const fecha = (this.form.fecha ?? '').trim();
     const userId = this.getLoggedUserId();
 
-    if (!this.estadoOnlyMode) {
-      if (!titulo || !lugar) { this.notificacion.advertencia('Título y lugar son obligatorios.'); return; }
-      if (!fecha) { this.notificacion.advertencia('La fecha es obligatoria.'); return; }
-      if (!this.editCategoriaId) { this.notificacion.advertencia('La categoría es obligatoria.'); return; }
-    }
+    if (!titulo || !lugar) { this.notificacion.advertencia('Título y lugar son obligatorios.'); return; }
+    if (!fecha) { this.notificacion.advertencia('La fecha es obligatoria.'); return; }
+    if (!this.editCategoriaId) { this.notificacion.advertencia('La categoría es obligatoria.'); return; }
 
     this.guardando = true;
     try {
@@ -270,5 +258,49 @@ export class RegistroObjetos implements OnInit {
       this.guardando = false;
       this.cdr.markForCheck();
     }
+  }
+
+  abrirModalEliminar(item: ObjetoDto): void {
+    this.objetoAEliminar = item;
+    this.mostrarModalEliminar = true;
+  }
+
+  cerrarModalEliminar(): void {
+    this.mostrarModalEliminar = false;
+    this.objetoAEliminar = null;
+  }
+
+  private async eliminarConfirmado(item: ObjetoDto): Promise<void> {
+    const id = this.getId(item);
+    if (id == null) return;
+
+    const prev = this.objetos;
+    const prevView = this.objetosView;
+
+    this.objetos = this.objetos.filter(o => this.getId(o) !== id);
+    this.updatePagination(this.objetosView.filter(o => this.getId(o) !== id));
+
+    if (this.editMode && this.form.idObjeto === id) {
+      this.cancelar();
+    }
+
+    this.eliminandoId = id;
+    try {
+      await firstValueFrom(this.objetoService.eliminar(id));
+      void this.cargar();
+    } catch (error) {
+      console.error(error);
+      this.objetos = prev;
+      this.updatePagination(prevView);
+      this.notificacion.error(this.notificacion.parsearError(error));
+    } finally {
+      this.eliminandoId = null;
+      this.cerrarModalEliminar();
+    }
+  }
+
+  async confirmarEliminar(): Promise<void> {
+    if (!this.objetoAEliminar) return;
+    await this.eliminarConfirmado(this.objetoAEliminar);
   }
 }

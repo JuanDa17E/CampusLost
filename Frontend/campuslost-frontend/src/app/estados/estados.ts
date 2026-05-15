@@ -36,6 +36,8 @@ export class Estados implements OnInit {
   formVisible = false;
   editMode = false;
   form: EstadoDto = { nombre: '' };
+  mostrarModalEliminar = false;
+  estadoAEliminar: EstadoDto | null = null;
 
   ngOnInit(): void {
     this.cargando = true;
@@ -150,9 +152,23 @@ export class Estados implements OnInit {
   }
 
   async eliminar(item: EstadoDto): Promise<void> {
-    if (item.idEstado == null) return;
     const ok = confirm('¿Seguro que deseas eliminar este estado?');
     if (!ok) return;
+    await this.eliminarConfirmado(item);
+  }
+
+  abrirModalEliminar(item: EstadoDto): void {
+    this.estadoAEliminar = item;
+    this.mostrarModalEliminar = true;
+  }
+
+  cerrarModalEliminar(): void {
+    this.mostrarModalEliminar = false;
+    this.estadoAEliminar = null;
+  }
+
+  private async eliminarConfirmado(item: EstadoDto): Promise<void> {
+    if (item.idEstado == null) return;
 
     const id = item.idEstado;
     const prevEstados = this.estados;
@@ -175,6 +191,12 @@ export class Estados implements OnInit {
       this.notificacion.error(this.notificacion.parsearError(error));
     } finally {
       this.eliminandoId = null;
+      this.cerrarModalEliminar();
     }
+  }
+  
+  async confirmarEliminar(): Promise<void> {
+    if (!this.estadoAEliminar) return;
+    await this.eliminarConfirmado(this.estadoAEliminar);
   }
 }

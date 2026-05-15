@@ -19,7 +19,6 @@ export class Bienvenida {
   private notificacion = inject(NotificacionService);
   private cdr = inject(ChangeDetectorRef);
 
-  // Control de vista
   vistaActual: 'login' | 'registro' = 'login';
 
   // Campos login

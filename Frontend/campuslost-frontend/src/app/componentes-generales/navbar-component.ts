@@ -13,7 +13,8 @@ import { AuthService } from '../services/auth';
 export class Navbar {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-
+  dropdownAbierto = false;
+  private dropdownTimeout: any;
   menuAbierto = false;
 
   toggleMenu(): void {
@@ -27,5 +28,17 @@ export class Navbar {
   cerrarSesion(): void {
     this.authService.cerrarSesion();
     this.router.navigate(['/'], { replaceUrl: true });
+  }
+
+
+  abrirDropdown(): void {
+    clearTimeout(this.dropdownTimeout);
+    this.dropdownAbierto = true;
+  }
+
+  cerrarDropdown(): void {
+    this.dropdownTimeout = setTimeout(() => {
+      this.dropdownAbierto = false;
+    }, 150); // 150ms de gracia para mover el mouse al menú
   }
 }
