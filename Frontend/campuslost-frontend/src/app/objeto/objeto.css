@@ -205,9 +205,40 @@
   font-size: 12px;
   color: #888780;
 }
+.btn-reclamar {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  background: #185FA5;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-reclamar:hover { background: #0C447C; }
 
 @media (max-width: 768px) {
   .objetos-wrapper { padding: 1rem; }
   .filtros-card { flex-direction: column; }
   .filtro-grupo { min-width: 100%; }
 }
+
+.btn-reclamar {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  background: #185FA5;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-reclamar:hover { background: #0C447C; }
