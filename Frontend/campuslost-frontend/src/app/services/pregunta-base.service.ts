@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../enviroments/enviroment';
 import { PreguntaBaseDto } from '../dto/preguntaBaseDTO';
 
 @Injectable({ providedIn: 'root' })
 export class PreguntaBaseService {
-  private readonly api = 'http://localhost:8080/api/preguntas-base';
+  private readonly api = `${environment.apiUrl}/preguntas-base`;
 
   constructor(private http: HttpClient) {}
 
