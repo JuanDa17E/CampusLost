@@ -1,0 +1,149 @@
+<app-navbar></app-navbar>
+
+<div class="page-wrapper">
+
+  <div class="page-hero">
+    <div>
+      <h1 class="page-titulo">Administrar preguntas</h1>
+      <p class="page-sub">Gestiona las preguntas que se muestran al registrar un objeto</p>
+    </div>
+    <button class="btn-registrar" type="button" (click)="abrirModalNueva()">
+      <i class="ti ti-plus"></i> Registrar pregunta
+    </button>
+  </div>
+
+  <div class="tabla-card">
+
+    <!-- Búsqueda -->
+    <div class="tabla-busqueda">
+      <div class="busqueda-input-wrap">
+        <i class="ti ti-search"></i>
+        <input
+          type="search"
+          class="busqueda-input"
+          placeholder="Buscar por texto de pregunta..."
+          [(ngModel)]="textoBusqueda"
+          (keyup.enter)="buscar()"
+        >
+      </div>
+      <button class="btn-buscar" type="button" (click)="buscar()">Buscar</button>
+    </div>
+
+    <!-- Paginación -->
+    <div class="tabla-paginacion">
+      <div class="mostrar-wrap">
+        Mostrar
+        <select class="select-pagina" [(ngModel)]="porPagina" (change)="cambiarPorPagina()">
+          <option [value]="5">5</option>
+          <option [value]="10">10</option>
+          <option [value]="20">20</option>
+        </select>
+        registros
+      </div>
+      <div class="pag-controls">
+        <button class="btn-pag" (click)="paginaAnterior()" [disabled]="paginaActual === 1">Anterior</button>
+        <span>Página {{ paginaActual }} de {{ totalPaginas }}</span>
+        <button class="btn-pag" (click)="paginaSiguiente()" [disabled]="paginaActual === totalPaginas">Siguiente</button>
+      </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-responsive">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Pregunta</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="preguntasPagina.length === 0">
+            <td colspan="3" class="tabla-empty">No hay preguntas para mostrar.</td>
+          </tr>
+          <tr *ngFor="let p of preguntasPagina">
+            <td>{{ p.id }}</td>
+            <td>{{ p.texto }}</td>
+            <td class="text-center">
+              <button type="button" class="btn-accion btn-editar" (click)="abrirModalEditar(p)">
+                <i class="ti ti-edit"></i> Editar
+              </button>
+              <button type="button" class="btn-accion btn-eliminar" (click)="abrirModalEliminar(p)">
+                <i class="ti ti-trash"></i> Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal crear / editar -->
+<div *ngIf="mostrarModal" class="modal fade show" tabindex="-1" role="dialog"
+     aria-modal="true" style="display: block;" (click)="cerrarModal()">
+  <div class="modal-dialog modal-dialog-centered" role="document" (click)="$event.stopPropagation()">
+    <div class="modal-content modal-custom">
+      <div class="modal-custom-header">
+        <h2 class="modal-custom-titulo">
+          <i class="ti" [class.ti-message-plus]="!editandoId" [class.ti-message-edit]="editandoId"></i>
+          {{ editandoId ? 'Editar pregunta' : 'Registrar pregunta' }}
+        </h2>
+        <button type="button" class="modal-custom-close" (click)="cerrarModal()" aria-label="Cerrar">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+      <div class="modal-custom-body">
+        <div class="campo-grupo" *ngIf="editandoId">
+          <label class="campo-label">ID</label>
+          <input class="campo-input campo-disabled" type="text" [value]="editandoId" disabled>
+        </div>
+        <div class="campo-grupo">
+          <label class="campo-label">Texto de la pregunta</label>
+          <textarea class="campo-textarea" rows="3" [(ngModel)]="form.texto" name="texto"
+            placeholder="Ej: ¿Cuál es el color del objeto?"></textarea>
+        </div>
+        <label class="campo-check">
+          <input type="checkbox" [(ngModel)]="form.activo" name="activo">
+          <span class="check-label-text">Pregunta activa <span class="check-hint">(visible para los usuarios)</span></span>
+        </label>
+      </div>
+      <div class="modal-custom-footer">
+        <button type="button" class="modal-btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+        <button type="button" class="modal-btn-guardar" (click)="guardar()" [disabled]="!form.texto.trim()">
+          <i class="ti ti-check"></i> Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="mostrarModal" class="modal-backdrop fade show" (click)="cerrarModal()"></div>
+
+<!-- Modal eliminar -->
+<div *ngIf="mostrarModalEliminar" class="modal fade show" tabindex="-1" role="dialog"
+     aria-modal="true" style="display: block;" (click)="cerrarModalEliminar()">
+  <div class="modal-dialog modal-dialog-centered" role="document" (click)="$event.stopPropagation()">
+    <div class="modal-content modal-custom">
+      <div class="modal-custom-header">
+        <h2 class="modal-custom-titulo">
+          <i class="ti ti-alert-circle"></i>
+          Eliminar pregunta
+        </h2>
+        <button type="button" class="modal-custom-close" (click)="cerrarModalEliminar()" aria-label="Cerrar">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+      <div class="modal-custom-body">
+        ¿Seguro que deseas eliminar la pregunta
+        <strong>"{{ preguntaAEliminar?.texto | slice:0:60 }}{{ (preguntaAEliminar?.texto?.length ?? 0) > 60 ? '…' : '' }}"</strong>?
+        Esta acción no se puede deshacer.
+      </div>
+      <div class="modal-custom-footer">
+        <button type="button" class="modal-btn-cancelar" (click)="cerrarModalEliminar()">Cancelar</button>
+        <button type="button" class="modal-btn-guardar" (click)="confirmarEliminar()">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="mostrarModalEliminar" class="modal-backdrop fade show" (click)="cerrarModalEliminar()"></div>

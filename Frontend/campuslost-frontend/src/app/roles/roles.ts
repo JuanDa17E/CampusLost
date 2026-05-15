@@ -37,6 +37,8 @@ export class Roles implements OnInit {
   formVisible = false;
   editMode = false;
   form: RolDto = { nombre: '' };
+  mostrarModalEliminar = false;
+  rolAEliminar: RolDto | null = null;
 
   ngOnInit(): void {
     this.cargando = true;
@@ -154,6 +156,22 @@ export class Roles implements OnInit {
     if (id == null) return;
     const ok = confirm('¿Seguro que deseas eliminar este rol?');
     if (!ok) return;
+    await this.eliminarConfirmado(item);
+  }
+
+  abrirModalEliminar(item: RolDto): void {
+    this.rolAEliminar = item;
+    this.mostrarModalEliminar = true;
+  }
+
+  cerrarModalEliminar(): void {
+    this.mostrarModalEliminar = false;
+    this.rolAEliminar = null;
+  }
+
+  private async eliminarConfirmado(item: RolDto): Promise<void> {
+    const id = this.getId(item);
+    if (id == null) return;
 
     const prevRoles = this.roles;
     const prevRolesView = this.rolesView;
@@ -175,6 +193,12 @@ export class Roles implements OnInit {
       this.notificacion.error(this.notificacion.parsearError(error));
     } finally {
       this.eliminandoId = null;
+      this.cerrarModalEliminar();
     }
+  }
+  
+  async confirmarEliminar(): Promise<void> {
+    if (!this.rolAEliminar) return;
+    await this.eliminarConfirmado(this.rolAEliminar);
   }
 }

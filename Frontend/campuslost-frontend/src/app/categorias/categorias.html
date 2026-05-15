@@ -52,7 +52,7 @@
               <button type="button" class="btn-accion btn-editar" (click)="editar(item)" [disabled]="guardando || buscando">
                 <i class="ti ti-edit"></i> Editar
               </button>
-              <button type="button" class="btn-accion btn-eliminar" (click)="eliminar(item)" [disabled]="eliminandoId === item.idCategoria">
+              <button type="button" class="btn-accion btn-eliminar" (click)="abrirModalEliminar(item)" [disabled]="eliminandoId === item.idCategoria">
                 <i class="ti ti-trash"></i>
                 {{ eliminandoId === item.idCategoria ? 'Eliminando...' : 'Eliminar' }}
               </button>
@@ -63,32 +63,55 @@
     </div>
   </div>
 
-</div>
+          </div>
 
-<div *ngIf="formVisible" class="modal fade show" tabindex="-1" role="dialog" aria-modal="true" style="display: block;" (click)="!guardando && cancelar()">
+          <!-- Delete confirmation modal -->
+          <div *ngIf="mostrarModalEliminar" class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true" (click)="cerrarModalEliminar()">
+            <div class="modal-dialog modal-dialog-centered" role="document" (click)="$event.stopPropagation()">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Eliminar categoría</h5>
+                  <button type="button" class="btn-close" (click)="cerrarModalEliminar()"></button>
+                </div>
+                <div class="modal-body">
+                  ¿Seguro que deseas eliminar la categoría <strong>"{{ categoriaAEliminar?.nombre }}"</strong>? Esta acción no se puede deshacer.
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" (click)="cerrarModalEliminar()">Cancelar</button>
+                  <button type="button" class="btn btn-danger" (click)="confirmarEliminar()">Sí, eliminar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="mostrarModalEliminar" class="modal-backdrop fade show" (click)="cerrarModalEliminar()"></div>
+
+          <div *ngIf="formVisible" class="modal fade show" tabindex="-1" role="dialog" aria-modal="true" style="display: block;" (click)="!guardando && cancelar()">
   <div class="modal-dialog modal-dialog-centered" role="document" (click)="$event.stopPropagation()">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title h5 mb-0">{{ editMode ? 'Editar categoría' : 'Registrar categoría' }}</h2>
-        <button type="button" class="btn-close" (click)="cancelar()" [disabled]="guardando"></button>
+    <div class="modal-content modal-custom">
+      <div class="modal-custom-header">
+        <h2 class="modal-custom-titulo">
+          <i class="ti" [class.ti-folder-plus]="!editMode" [class.ti-folder-edit]="editMode"></i>
+          {{ editMode ? 'Editar categoría' : 'Registrar categoría' }}
+        </h2>
+        <button type="button" class="modal-custom-close" (click)="cancelar()" aria-label="Cerrar" [disabled]="guardando">
+          <i class="ti ti-x"></i>
+        </button>
       </div>
-      <div class="modal-body">
-        <form class="row g-2">
-          <div class="col-12" *ngIf="editMode">
-            <label class="form-label">ID</label>
-            <input class="form-control" type="number" [ngModel]="form.idCategoria" name="idCategoria" disabled>
-          </div>
-          <div class="col-12">
-            <label class="form-label">Nombre</label>
-            <input class="form-control" type="text" [(ngModel)]="form.nombre" name="nombre" required [disabled]="guardando">
-          </div>
-          <div class="col-12 d-grid gap-2 d-md-flex justify-content-md-end mt-2">
-            <button type="button" class="btn btn-secondary" (click)="cancelar()" [disabled]="guardando">Cancelar</button>
-            <button type="button" class="btn btn-success" (click)="guardar()" [disabled]="guardando">
-              {{ guardando ? 'Guardando...' : 'Guardar' }}
-            </button>
-          </div>
-        </form>
+      <div class="modal-custom-body">
+        <div class="campo-grupo" *ngIf="editMode">
+          <label class="campo-label">ID</label>
+          <input class="campo-input campo-disabled" type="text" [value]="form.idCategoria" disabled>
+        </div>
+        <div class="campo-grupo">
+          <label class="campo-label">Nombre</label>
+          <input class="campo-input" type="text" [(ngModel)]="form.nombre" name="nombre" required [disabled]="guardando" placeholder="Ej: Electrónica">
+        </div>
+      </div>
+      <div class="modal-custom-footer">
+        <button type="button" class="modal-btn-cancelar" (click)="cancelar()" [disabled]="guardando">Cancelar</button>
+        <button type="button" class="modal-btn-guardar" (click)="guardar()" [disabled]="!form.nombre.trim() || guardando">
+          <i class="ti ti-check"></i> Guardar
+        </button>
       </div>
     </div>
   </div>

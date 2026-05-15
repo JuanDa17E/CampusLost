@@ -35,6 +35,8 @@ export class Categorias implements OnInit {
   formVisible = false;
   editMode = false;
   form: CategoriaDto = { nombre: '' };
+  mostrarModalEliminar = false;
+  categoriaAEliminar: CategoriaDto | null = null;
 
   ngOnInit(): void {
     this.cargando = true;
@@ -149,9 +151,23 @@ export class Categorias implements OnInit {
   }
 
   async eliminar(item: CategoriaDto): Promise<void> {
-    if (item.idCategoria == null) return;
     const ok = confirm('¿Seguro que deseas eliminar esta categoría?');
     if (!ok) return;
+    await this.eliminarConfirmado(item);
+  }
+
+  abrirModalEliminar(item: CategoriaDto): void {
+    this.categoriaAEliminar = item;
+    this.mostrarModalEliminar = true;
+  }
+
+  cerrarModalEliminar(): void {
+    this.mostrarModalEliminar = false;
+    this.categoriaAEliminar = null;
+  }
+
+  private async eliminarConfirmado(item: CategoriaDto): Promise<void> {
+    if (item.idCategoria == null) return;
 
     const id = item.idCategoria;
     const prevCategorias = this.categorias;
@@ -174,6 +190,12 @@ export class Categorias implements OnInit {
       this.notificacion.error(this.notificacion.parsearError(error));
     } finally {
       this.eliminandoId = null;
+      this.cerrarModalEliminar();
     }
+  }
+
+  async confirmarEliminar(): Promise<void> {
+    if (!this.categoriaAEliminar) return;
+    await this.eliminarConfirmado(this.categoriaAEliminar);
   }
 }

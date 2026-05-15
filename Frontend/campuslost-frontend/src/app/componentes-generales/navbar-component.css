@@ -143,6 +143,10 @@
   animation: slideDownDropdown 0.2s ease-out;
 }
 
+.dropdown-menu.show {
+  display: block; 
+}
+
 @keyframes slideDownDropdown {
   from {
     opacity: 0;
