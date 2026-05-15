@@ -7,6 +7,7 @@ import { firstValueFrom } from 'rxjs';
 import { ObjetoService } from '../services/objeto';
 import { ObjetoDto } from '../dto/objetoDTO';
 import { Navbar } from "../componentes-generales/navbar-component";
+import { AuthService } from '../services/auth';
 
 @Component({
   selector: 'app-objetos',
@@ -30,6 +31,8 @@ export class Objeto implements OnInit {
 
   categorias: string[] = [];
 
+  constructor(private readonly authService: AuthService) {}
+    
   ngOnInit(): void {
     void this.cargar();
   }
@@ -107,5 +110,16 @@ export class Objeto implements OnInit {
 
   irAInicio(): void {
     this.router.navigate(['/inicio']);
+  }
+
+  reclamar(item: ObjetoDto): void {
+    const id = item.idObjeto ?? item.id_objeto;
+    if (!this.authService.estaLogueado()) {
+      this.router.navigate(['/'], {
+        queryParams: { returnUrl: `/reclamar-objeto/${id}` }
+      });
+      return;
+    }
+    this.router.navigate([`/reclamar-objeto/${id}`]);
   }
 }

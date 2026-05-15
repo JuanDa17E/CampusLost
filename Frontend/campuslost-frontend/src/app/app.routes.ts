@@ -12,6 +12,7 @@ import { auth } from './auth/auth';
 import { RegistrarObjeto } from './registrar-objeto/registrar-objeto';
 import { Objeto} from './objeto/objeto';
 import { CrudPreguntas } from './preguntas/preguntas';
+import { ReclamarObjeto } from './reclamar-objeto/reclamar-objeto';
 
 
 
@@ -86,6 +87,11 @@ export const routes: Routes = [
     component: CrudPreguntas,
     canActivate: [auth]
   },
+  {
+  path: 'reclamar-objeto/:id',
+  component: ReclamarObjeto,
+  canActivate: [auth]
+},
   {
     path: '**',
     redirectTo: ''
