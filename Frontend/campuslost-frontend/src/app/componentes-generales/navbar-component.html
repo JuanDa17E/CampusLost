@@ -11,6 +11,10 @@
         <i class="ti ti-home"></i> Inicio
       </a>
 
+      <a class="nav-link" routerLink="/perfil" routerLinkActive="active">
+        <i class="ti ti-user"></i> Perfil
+      </a>
+
       <div class="nav-dropdown" (mouseenter)="abrirDropdown()"
      (mouseleave)="cerrarDropdown()">
         <button class="dropdown-btn">
@@ -52,6 +56,10 @@
     <div class="mobile-menu" [class.show]="menuAbierto">
       <a class="mobile-link" routerLink="/inicio" routerLinkActive="active" (click)="cerrarMenu()">
         <i class="ti ti-home"></i> Inicio
+      </a>
+
+      <a class="mobile-link" routerLink="/perfil" routerLinkActive="active" (click)="cerrarMenu()">
+        <i class="ti ti-user"></i> Perfil
       </a>
 
       <div class="mobile-seccion">

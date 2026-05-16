@@ -1,0 +1,107 @@
+<app-navbar></app-navbar>
+
+<div class="page-wrapper">
+  <div class="page-hero">
+    <div>
+      <h1 class="page-titulo">Mi perfil</h1>
+      <p class="page-sub">Edita tus datos y tu contraseña</p>
+    </div>
+  </div>
+
+  <div *ngIf="cargando" class="perfil-card perfil-loading">
+    Cargando perfil...
+  </div>
+
+  <div *ngIf="!cargando" class="perfil-card">
+    <div class="perfil-grid">
+      <div class="perfil-col">
+        <h2 class="seccion-titulo"><i class="ti ti-user"></i> Datos</h2>
+
+        <div class="campo-grupo">
+          <label class="campo-label">Nombre</label>
+          <input
+            class="campo-input"
+            type="text"
+            [(ngModel)]="form.nombre"
+            name="nombre"
+            [disabled]="guardando"
+            placeholder="Ej: Juan Pérez"
+          />
+        </div>
+
+        <div class="campo-grupo">
+          <label class="campo-label">Correo</label>
+          <input
+            class="campo-input campo-disabled"
+            type="email"
+            [(ngModel)]="form.correo"
+            name="correo"
+            [disabled]="true"
+          />
+          <small class="hint">El correo no se puede editar.</small>
+        </div>
+
+        <div class="perfil-meta">
+          <div class="meta-item">
+            <span class="meta-label">Rol</span>
+            <span class="meta-value">{{ getRolNombre() }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Fecha creación</span>
+            <span class="meta-value">{{ getFechaCreacionDisplay() }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="perfil-col">
+        <h2 class="seccion-titulo"><i class="ti ti-lock"></i> Seguridad</h2>
+
+        <div class="campo-grupo">
+          <label class="campo-label">Nueva contraseña</label>
+          <input
+            class="campo-input"
+            type="password"
+            [(ngModel)]="form.nuevaContrasena"
+            name="nuevaContrasena"
+            [disabled]="guardando"
+            placeholder="••••••••"
+          />
+          <small class="hint">Déjala vacía si no deseas cambiarla.</small>
+        </div>
+
+        <div class="campo-grupo">
+          <label class="campo-label">Confirmar nueva contraseña</label>
+          <input
+            class="campo-input"
+            type="password"
+            [(ngModel)]="form.confirmarContrasena"
+            name="confirmarContrasena"
+            [disabled]="guardando"
+            placeholder="••••••••"
+          />
+        </div>
+
+        <div class="pass-requisitos">
+          <p class="requisitos-titulo">Requisitos</p>
+          <ul class="requisitos-lista">
+            <li>Mínimo 8 caracteres</li>
+            <li>Al menos 1 mayúscula</li>
+            <li>Al menos 1 caracter especial</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="perfil-footer">
+      <button
+        type="button"
+        class="btn-guardar"
+        (click)="guardarCambios()"
+        [disabled]="guardando"
+      >
+        <i class="ti ti-check"></i>
+        {{ guardando ? 'Guardando...' : 'Guardar cambios' }}
+      </button>
+    </div>
+  </div>
+</div>

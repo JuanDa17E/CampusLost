@@ -1,0 +1,180 @@
+@keyframes fadeInContent {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-wrapper {
+  padding: 56px 2.5rem 2rem 2.5rem;
+  background: #f4f6fb;
+  min-height: 100vh;
+  animation: fadeInContent 0.5s ease-out 0.2s both;
+}
+
+.page-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.page-titulo {
+  font-size: 24px;
+  font-weight: 600;
+  color: #185FA5;
+  margin: 0;
+}
+
+.page-sub {
+  font-size: 14px;
+  color: #888780;
+  margin: 4px 0 0;
+}
+
+.perfil-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 0.5px solid rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+}
+
+.perfil-loading {
+  text-align: center;
+  color: #888780;
+}
+
+.perfil-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.seccion-titulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0C447C;
+  margin: 0 0 1rem;
+}
+
+.seccion-titulo i {
+  color: #185FA5;
+  font-size: 18px;
+}
+
+.hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #888780;
+}
+
+.perfil-meta {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: #f4f6fb;
+  border: 0.5px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 160px;
+}
+
+.meta-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #888780;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.meta-value {
+  font-size: 14px;
+  color: #2C2C2A;
+  font-weight: 500;
+}
+
+.pass-requisitos {
+  margin-top: 0.75rem;
+  background: #E6F1FB;
+  border: 0.5px solid rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+}
+
+.requisitos-titulo {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: #0C447C;
+  font-weight: 600;
+}
+
+.requisitos-lista {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: #5F5E5A;
+  font-size: 13px;
+}
+
+.perfil-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.btn-guardar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 22px;
+  background: #185FA5;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-guardar:hover {
+  background: #0C447C;
+}
+
+.btn-guardar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+  .page-wrapper {
+    padding: 56px 1rem 1.5rem 1rem;
+  }
+
+  .perfil-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .perfil-footer {
+    justify-content: stretch;
+  }
+
+  .btn-guardar {
+    width: 100%;
+    justify-content: center;
+  }
+}

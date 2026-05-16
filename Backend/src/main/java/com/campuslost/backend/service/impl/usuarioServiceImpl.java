@@ -49,23 +49,47 @@ public class usuarioServiceImpl implements usuarioService {
         usuario editor = usuarioRepository.findById(idUsuarioEditor)
                 .orElseThrow(() -> new RuntimeException("Editor no encontrado"));
 
-        if (editor.getRol().getIdRol() != 1) {
-            throw new RuntimeException("No tienes permisos para editar usuarios");
+        boolean esEdicionPropia = idUsuarioEditor != null && idUsuarioEditor.equals(id);
+
+        // Permite que el usuario edite su propio perfil. Para editar a terceros requiere rol ADMIN (idRol=1).
+        if (!esEdicionPropia) {
+            if (editor.getRol() == null || editor.getRol().getIdRol() != 1) {
+                throw new RuntimeException("No tienes permisos para editar usuarios");
+            }
         }
 
         usuario existente = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        existente.setNombre(usuario.getNombre());
-        existente.setCorreo(usuario.getCorreo());
-        existente.setRol(usuario.getRol());
+        if (usuario.getNombre() != null && !usuario.getNombre().trim().isEmpty()) {
+            existente.setNombre(usuario.getNombre().trim());
+        }
+
+        if (usuario.getCorreo() != null && !usuario.getCorreo().trim().isEmpty()) {
+            final String correoNuevo = usuario.getCorreo().trim();
+            usuarioRepository.findByCorreo(correoNuevo).ifPresent((u) -> {
+                if (u.getIdUsuario() != null && !u.getIdUsuario().equals(id)) {
+                    throw new RuntimeException("El correo ya está registrado");
+                }
+            });
+            existente.setCorreo(correoNuevo);
+        }
+
+        // Solo un ADMIN puede cambiar el rol; al editar el propio perfil, se mantiene el rol actual.
+        if (!esEdicionPropia && usuario.getRol() != null) {
+            existente.setRol(usuario.getRol());
+        }
 
         if (usuario.getContrasena() != null &&
             !usuario.getContrasena().trim().isEmpty()) {
 
-            existente.setContrasena(
-                passwordEncoder.encode(usuario.getContrasena())
-            );
+            String pass = usuario.getContrasena().trim();
+            if (pass.startsWith("$2a$")) {
+                // Evita doble hash en escenarios donde el frontend reenvía el hash.
+                existente.setContrasena(pass);
+            } else {
+                existente.setContrasena(passwordEncoder.encode(pass));
+            }
         }
 
         return usuarioRepository.save(existente);

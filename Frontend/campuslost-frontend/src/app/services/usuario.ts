@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../enviroments/enviroment';
 
 export interface UsuarioDto {
   idUsuario?: number;
@@ -28,7 +29,7 @@ export interface UsuarioDto {
 })
 export class UsuarioService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = '/api/usuarios';
+  private readonly baseUrl = `${environment.apiUrl}/usuarios`;
 
   crear(usuario: UsuarioDto): Observable<UsuarioDto> {
     return this.http.post<UsuarioDto>(this.baseUrl, usuario);

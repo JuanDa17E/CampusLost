@@ -13,6 +13,7 @@ import { RegistrarObjeto } from './registrar-objeto/registrar-objeto';
 import { Objeto} from './objeto/objeto';
 import { CrudPreguntas } from './preguntas/preguntas';
 import { ReclamarObjeto } from './reclamar-objeto/reclamar-objeto';
+import { Perfil } from './perfil/perfil';
 
 
 
@@ -30,6 +31,12 @@ export const routes: Routes = [
   {
     path: 'inicio',
     component: inicio,
+    canActivate: [auth]
+  },
+
+  {
+    path: 'perfil',
+    component: Perfil,
     canActivate: [auth]
   },
 

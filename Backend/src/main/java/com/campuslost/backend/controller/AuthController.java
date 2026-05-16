@@ -58,7 +58,8 @@ public class AuthController {
         nuevoUsuario.setContrasena(passwordEncoder.encode(request.getContrasena()));
 
         rol rolDefault = new rol();
-        rolDefault.setIdRol(1);
+        // Por defecto, todo usuario nuevo se registra como USUARIO (id=2).
+        rolDefault.setIdRol(2);
         nuevoUsuario.setRol(rolDefault);
 
         usuarioRepository.save(nuevoUsuario);
